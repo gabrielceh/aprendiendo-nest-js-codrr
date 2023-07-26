@@ -14,7 +14,7 @@ export class UserDTO {
 
   @IsNotEmpty()
   @IsString()
-  lastMame: string;
+  lastName: string;
 
   @IsNotEmpty()
   @IsNumber()
@@ -44,7 +44,7 @@ export class UserUpdateDTO {
 
   @IsOptional()
   @IsString()
-  lastMame?: string;
+  lastName?: string;
 
   @IsOptional()
   @IsNumber()

@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, UpdateResult, DeleteResult } from 'typeorm';
 import { ProjectsEntity } from '../entities/projects.entity';
 import { ProjectDTO } from '../dto/project.dto';
+import { ErrorManager } from 'src/utils/error.manager';
 
 @Injectable()
 export class ProjectsService {
@@ -15,26 +16,42 @@ export class ProjectsService {
     try {
       return this.projectRepository.save(body);
     } catch (error) {
-      throw new Error(error);
+      throw ErrorManager.createSignatureError(error.message);
     }
   }
 
   public async findProjects(): Promise<ProjectsEntity[]> {
     try {
-      return this.projectRepository.find();
+      const projectsFound: Array<ProjectsEntity> =
+        await this.projectRepository.find();
+
+      if (projectsFound.length === 0)
+        throw new ErrorManager({
+          type: 'BAD_REQUEST',
+          message: 'No hay resultados',
+        });
+      return projectsFound;
     } catch (error) {
-      throw new Error(error);
+      throw ErrorManager.createSignatureError(error.message);
     }
   }
 
   public async findProjectById(id: string): Promise<ProjectsEntity> {
     try {
-      return this.projectRepository
+      const projectFound: ProjectsEntity = await this.projectRepository
         .createQueryBuilder('project')
         .where({ id })
         .getOne();
+
+      if (!projectFound)
+        throw new ErrorManager({
+          type: 'BAD_REQUEST',
+          message: 'No se encontró un proyecto',
+        });
+
+      return projectFound;
     } catch (error) {
-      throw new Error(error);
+      throw ErrorManager.createSignatureError(error.message);
     }
   }
 
@@ -48,11 +65,15 @@ export class ProjectsService {
         body,
       );
 
-      if (project.affected === 0) return undefined;
+      if (project.affected === 0)
+        throw new ErrorManager({
+          type: 'BAD_REQUEST',
+          message: 'No se pudo actualizar el proyecto',
+        });
 
       return project;
     } catch (error) {
-      throw new Error(error);
+      throw ErrorManager.createSignatureError(error.message);
     }
   }
 
@@ -60,11 +81,15 @@ export class ProjectsService {
     try {
       const project: DeleteResult = await this.projectRepository.delete(id);
 
-      if (project.affected === 0) return undefined;
+      if (project.affected === 0)
+        throw new ErrorManager({
+          type: 'BAD_REQUEST',
+          message: 'No se pudo borrar el proyecto',
+        });
 
       return project;
     } catch (error) {
-      throw new Error(error);
+      throw ErrorManager.createSignatureError(error.message);
     }
   }
 }

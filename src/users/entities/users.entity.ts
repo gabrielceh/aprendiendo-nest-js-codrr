@@ -13,7 +13,7 @@ export class UsersEntity extends BaseEntity implements IUser {
   firstName: string;
 
   @Column()
-  lastMame: string;
+  lastName: string;
 
   @Column()
   age: number;
