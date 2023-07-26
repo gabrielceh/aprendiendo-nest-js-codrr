@@ -11,11 +11,22 @@ import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import * as morgan from 'morgan';
 import { CORS } from './constants';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.use(morgan('dev'));
+
+  // Habilitanos las validaciones globales de class-validator
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
+    }),
+  );
+
   // consultamos el ConfigService
   const configService = app.get(ConfigService);
   const PORT = configService.get('PORT');
