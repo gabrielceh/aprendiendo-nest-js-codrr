@@ -2,19 +2,32 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, UpdateResult, DeleteResult } from 'typeorm';
 import { UsersEntity } from '../entities/users.entity';
-import { UserDTO, UserUpdateDTO } from '../dto/user.dto';
+import { UserDTO, UserToProjectDTO, UserUpdateDTO } from '../dto/user.dto';
 import { ErrorManager } from 'src/utils/error.manager';
+import { UserProjectsEntity } from '../entities/usersProjects.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(UsersEntity)
     private readonly useRepository: Repository<UsersEntity>,
+    @InjectRepository(UserProjectsEntity)
+    private readonly UserProjectRepository: Repository<UserProjectsEntity>,
   ) {}
 
   public async createUser(body: UserDTO): Promise<UsersEntity> {
     try {
       return await this.useRepository.save(body);
+    } catch (error) {
+      throw ErrorManager.createSignatureError(error.message);
+    }
+  }
+
+  public async relationToProject(
+    body: UserToProjectDTO,
+  ): Promise<UserProjectsEntity> {
+    try {
+      return await this.UserProjectRepository.save(body);
     } catch (error) {
       throw ErrorManager.createSignatureError(error.message);
     }
@@ -41,6 +54,10 @@ export class UsersService {
       const userFound: UsersEntity = await this.useRepository
         .createQueryBuilder('user')
         .where({ id })
+        // Agregamos la relacion.
+        // el primer valor representa la tabla y el campo de la tabla cuando hace el join y el sgundo representa el valor
+        .leftJoinAndSelect('user.projectsIncludes', 'projectsIncludes')
+        .leftJoinAndSelect('projectsIncludes.project', 'project')
         .getOne();
 
       if (!userFound)

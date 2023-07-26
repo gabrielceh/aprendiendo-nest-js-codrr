@@ -4,6 +4,7 @@ import { Repository, UpdateResult, DeleteResult } from 'typeorm';
 import { ProjectsEntity } from '../entities/projects.entity';
 import { ProjectDTO } from '../dto/project.dto';
 import { ErrorManager } from 'src/utils/error.manager';
+import { UserDTO } from 'src/users/dto/user.dto';
 
 @Injectable()
 export class ProjectsService {
@@ -41,6 +42,18 @@ export class ProjectsService {
       const projectFound: ProjectsEntity = await this.projectRepository
         .createQueryBuilder('project')
         .where({ id })
+        .leftJoinAndSelect('project.usersIncludes', 'usersIncludes')
+        .leftJoinAndSelect('usersIncludes.user', 'user')
+        .select([
+          'project',
+          'usersIncludes',
+          'user.id',
+          'user.username',
+          'user.firstName',
+          'user.lastName',
+          'user.email',
+          'user.role',
+        ])
         .getOne();
 
       if (!projectFound)
