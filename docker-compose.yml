@@ -1,0 +1,15 @@
+version: '3.1'
+
+services:
+  aprendiendo_nest_pg:
+    image: postgres:15.1
+    container_name: aprendiendo_nest_pg
+    restart: always
+    environment:
+      POSTGRES_DB: nest_01_db
+      POSTGRES_USER: user_gabo
+      POSTGRES_PASSWORD: secret1234
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-intidb.d/initi.sql
+    ports:
+      - 5433:5432

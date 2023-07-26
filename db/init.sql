@@ -1,0 +1,3 @@
+---CREATE DATA BASE IF NOT EXIST nest_01_db
+SELECT 'CREATE DATABASE nest_01_db'
+WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'nest_01_db')\gexec
