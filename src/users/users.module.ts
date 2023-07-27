@@ -10,5 +10,7 @@ import { UserProjectsEntity } from './entities/usersProjects.entity';
   imports: [TypeOrmModule.forFeature([UsersEntity, UserProjectsEntity])],
   providers: [UsersService],
   controllers: [UsersController],
+  // exportamos para poder usar en el modulo de Auth
+  exports: [UsersService, TypeOrmModule],
 })
 export class UsersModule {}

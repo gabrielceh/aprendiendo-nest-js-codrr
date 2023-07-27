@@ -27,3 +27,12 @@ export const DATASOURCECONFIG: DataSourceOptions = {
 };
 
 export const AppDS = new DataSource(DATASOURCECONFIG);
+
+// En el package.json se agregaron unos scripts para poder ejecutar las migraciones
+// 			"orm:init": "typeorm-ts-node-esm -d ./src/config/data.source.ts",
+//     "m:gen": "SET NODE_ENV=develop && npm run orm:init migration:generate",
+//     "m:run": "SET NODE_ENV=develop && npm run orm:init migration:run"
+
+//  npm run m:gen -- src/migrations/init
+//  npm run m:run
+// luego borrar la carpeta dist

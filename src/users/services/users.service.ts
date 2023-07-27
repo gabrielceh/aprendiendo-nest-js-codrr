@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, UpdateResult, DeleteResult } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 import { UsersEntity } from '../entities/users.entity';
 import { UserDTO, UserToProjectDTO, UserUpdateDTO } from '../dto/user.dto';
 import { ErrorManager } from 'src/utils/error.manager';
@@ -17,6 +18,9 @@ export class UsersService {
 
   public async createUser(body: UserDTO): Promise<UsersEntity> {
     try {
+      // Hasheamos la contraseña del usuario
+
+      body.password = await bcrypt.hash(body.password, +process.env.HASH_SALT);
       return await this.useRepository.save(body);
     } catch (error) {
       throw ErrorManager.createSignatureError(error.message);
@@ -65,6 +69,24 @@ export class UsersService {
           type: 'BAD_REQUEST',
           message: 'No se encontró al usuario',
         });
+
+      return userFound;
+    } catch (error) {
+      throw ErrorManager.createSignatureError(error.message);
+    }
+  }
+
+  //Esta funcion recibe una key y un value
+  // La key representa la columna a buscar y el value el valor
+  public async findBy({ key, value }: { key: keyof UserDTO; value: any }) {
+    try {
+      // Obtenemos un usuario
+      const userFound: UsersEntity = await this.useRepository
+        .createQueryBuilder('user')
+        .addSelect('user.password')
+        .where({ [key]: value })
+        .getOne();
+      console.log(userFound, 'linea 89');
 
       return userFound;
     } catch (error) {
