@@ -10,11 +10,13 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ProjectsService } from '../services/projects.service';
+import { ApiTags } from '@nestjs/swagger';
 import { ProjectDTO, ProjectUpdateDTO } from '../dto/project.dto';
 import { AccessLevelGuard, AuthGuard, RolesGuard } from 'src/auth/guards';
 import { AccessLevel } from 'src/auth/decorators/access-level.decorator';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 
+@ApiTags('Projects') // para la documentacion de Swaggerpara la documentacion de Swagger
 @Controller('projects')
 @UseGuards(AuthGuard, RolesGuard, AccessLevelGuard)
 export class ProjectsController {

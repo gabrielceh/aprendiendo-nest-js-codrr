@@ -27,9 +27,7 @@ export class UsersService {
     }
   }
 
-  public async relationToProject(
-    body: UserToProjectDTO,
-  ): Promise<UserProjectsEntity> {
+  public async relationToProject(body: UserToProjectDTO) {
     try {
       return await this.UserProjectRepository.save(body);
     } catch (error) {

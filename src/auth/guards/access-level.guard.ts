@@ -94,7 +94,8 @@ export class AccessLevelGuard implements CanActivate {
     }
 
     // si el usuario existe, validamos su nivel de acceso
-    if (ACCESS_LEVEL[accessLevel] !== userExistInProject.accessLevel) {
+    // si el access level del usuario es menor al access lever requerido no tendra acceso
+    if (ACCESS_LEVEL[accessLevel] > userExistInProject.accessLevel) {
       throw new UnauthorizedException('No tienes el nivel de acceso necesario');
     }
 

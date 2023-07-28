@@ -6,6 +6,7 @@
  * npm i morgan
  * npm i bcrypt
  * npm i jsonwebtoken
+ * npm install --save @nestjs/swagger // documentacion
  *
  */
 
@@ -15,6 +16,7 @@ import { ConfigService } from '@nestjs/config';
 import * as morgan from 'morgan';
 import { CORS } from './constants';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -37,11 +39,21 @@ async function bootstrap() {
   // consultamos el ConfigService
   const configService = app.get(ConfigService);
   const PORT = configService.get('PORT');
+
   // console.log(configService.get('PORT'));
 
   app.enableCors(CORS);
-
   app.setGlobalPrefix('api/codrr');
+  // config para la documentacion con swagger
+  const config = new DocumentBuilder()
+    .setTitle('Codrr Curso Api')
+    .setDescription(
+      'Aplicacion del curso de https://www.youtube.com/playlist?list=PLergODdA95kfcSoXqZZ-IDImO6YaQLYlG',
+    )
+    .setVersion('1.0')
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('docs', app, document);
 
   await app.listen(PORT);
   console.log(`App running on: ${await app.getUrl()}`);

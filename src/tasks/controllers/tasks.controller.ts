@@ -1,9 +1,11 @@
 import { Body, Controller, Param, Post, UseGuards } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { TasksService } from '../services/tasks.service';
 import { TasksDTO } from '../dto/task.dto';
 import { AccessLevelGuard, AuthGuard, RolesGuard } from 'src/auth/guards';
 import { AccessLevel } from 'src/auth/decorators/access-level.decorator';
 
+@ApiTags('Taks') // para la documentacion de Swagger
 @Controller('tasks')
 @UseGuards(AuthGuard, RolesGuard, AccessLevelGuard)
 export class TasksController {

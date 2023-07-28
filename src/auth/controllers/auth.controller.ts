@@ -1,7 +1,9 @@
 import { Body, Controller, Post, UnauthorizedException } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from '../services/auth.service';
 import { AuthBodyDTO } from '../dto/auth.dto';
 
+@ApiTags('Auth') // para la documentacion de Swagger
 @Controller('auth')
 export class AuthController {
   // Inyectamos el AuthService

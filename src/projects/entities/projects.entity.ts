@@ -1,4 +1,5 @@
 import { Column, Entity, OneToMany } from 'typeorm';
+import { ApiProperty } from '@nestjs/swagger/dist';
 import { IProject } from 'interfaces/project.interface';
 // importar todas la entidades sin el src
 import { BaseEntity } from '../../config/base.entity';
@@ -7,16 +8,20 @@ import { TasksEntity } from '../../tasks/entities/task.entity';
 
 @Entity({ name: 'projects' })
 export class ProjectsEntity extends BaseEntity implements IProject {
+  @ApiProperty() // para la documentacion con swagger
   @Column()
   name: string;
+  @ApiProperty() // para la documentacion con swagger
   @Column()
   description: string;
 
   // campo para hacer la relacion entre usuario y proyecto
+  @ApiProperty() // para la documentacion con swagger
   @OneToMany(() => UserProjectsEntity, (usersProjects) => usersProjects.project)
   usersIncludes: UserProjectsEntity[];
 
   //One to Many: Un proyecto puede tener muchas tareas
+  @ApiProperty() // para la documentacion con swagger
   @OneToMany(() => TasksEntity, (tasks) => tasks.project)
   tasks: TasksEntity[];
 }
