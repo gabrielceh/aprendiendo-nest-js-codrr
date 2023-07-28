@@ -1,7 +1,9 @@
 import { Column, Entity, OneToMany } from 'typeorm';
 import { IProject } from 'interfaces/project.interface';
+// importar todas la entidades sin el src
 import { BaseEntity } from '../../config/base.entity';
 import { UserProjectsEntity } from '../../users/entities/usersProjects.entity';
+import { TasksEntity } from '../../tasks/entities/task.entity';
 
 @Entity({ name: 'projects' })
 export class ProjectsEntity extends BaseEntity implements IProject {
@@ -12,7 +14,11 @@ export class ProjectsEntity extends BaseEntity implements IProject {
 
   // campo para hacer la relacion entre usuario y proyecto
   @OneToMany(() => UserProjectsEntity, (usersProjects) => usersProjects.project)
-  usersIncludes: UserProjectsEntity;
+  usersIncludes: UserProjectsEntity[];
+
+  //One to Many: Un proyecto puede tener muchas tareas
+  @OneToMany(() => TasksEntity, (tasks) => tasks.project)
+  tasks: TasksEntity[];
 }
 
 // Para crear las tablas, agregamos unos scripts en el package.json

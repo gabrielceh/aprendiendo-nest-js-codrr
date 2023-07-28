@@ -32,7 +32,6 @@ export class UsersController {
     return await this.userService.relationToProject(body);
   }
 
-  @Roles('BASIC')
   @Get('all')
   public async findAllUsers() {
     return await this.userService.findUsers();

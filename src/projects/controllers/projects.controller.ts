@@ -11,19 +11,22 @@ import {
 } from '@nestjs/common';
 import { ProjectsService } from '../services/projects.service';
 import { ProjectDTO, ProjectUpdateDTO } from '../dto/project.dto';
-import { AuthGuard } from 'src/auth/guards/auth.guard';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { AccessLevelGuard } from 'src/auth/guards/access-level.guard';
+import { AccessLevelGuard, AuthGuard, RolesGuard } from 'src/auth/guards';
 import { AccessLevel } from 'src/auth/decorators/access-level.decorator';
+import { Roles } from 'src/auth/decorators/roles.decorator';
 
 @Controller('projects')
 @UseGuards(AuthGuard, RolesGuard, AccessLevelGuard)
 export class ProjectsController {
   constructor(private readonly projectService: ProjectsService) {}
 
-  @Post('register')
-  public async registerProject(@Body() body: ProjectDTO) {
-    return await this.projectService.createProject(body);
+  @Roles('CREATOR')
+  @Post('create/user-owner/:userId')
+  public async registerProject(
+    @Body() body: ProjectDTO,
+    @Param('userId') userId: string,
+  ) {
+    return await this.projectService.createProject(body, userId);
   }
 
   @Get('all')
@@ -38,7 +41,7 @@ export class ProjectsController {
     return await this.projectService.findProjectById(projectId);
   }
 
-  @AccessLevel(50)
+  @AccessLevel('OWNER')
   @Patch('edit/:projectId')
   public async editProject(
     @Param('projectId', new ParseUUIDPipe()) projectId: string,

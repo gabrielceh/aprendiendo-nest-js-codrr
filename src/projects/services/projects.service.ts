@@ -5,17 +5,31 @@ import { ProjectsEntity } from '../entities/projects.entity';
 import { ProjectDTO } from '../dto/project.dto';
 import { ErrorManager } from 'src/utils/error.manager';
 import { UserDTO } from 'src/users/dto/user.dto';
+import { UserProjectsEntity } from 'src/users/entities/usersProjects.entity';
+import { ACCESS_LEVEL } from 'src/constants';
+import { UsersService } from 'src/users/services/users.service';
 
 @Injectable()
 export class ProjectsService {
   constructor(
     @InjectRepository(ProjectsEntity)
     private readonly projectRepository: Repository<ProjectsEntity>,
+    @InjectRepository(UserProjectsEntity)
+    private readonly userProjectRepository: Repository<UserProjectsEntity>,
+    private readonly userService: UsersService,
   ) {}
 
-  public async createProject(body: ProjectDTO): Promise<ProjectsEntity> {
+  public async createProject(body: ProjectDTO, userId: string): Promise<any> {
     try {
-      return this.projectRepository.save(body);
+      const user = await this.userService.findUserById(userId);
+      // creamaos el proyecto
+      const project = await this.projectRepository.save(body);
+      // Cuando el usuario con rol CREATE cre un nuevo proyecto, será asignado a este
+      return await this.userProjectRepository.save({
+        accessLevel: ACCESS_LEVEL.OWNER,
+        user: user,
+        project,
+      });
     } catch (error) {
       throw ErrorManager.createSignatureError(error.message);
     }

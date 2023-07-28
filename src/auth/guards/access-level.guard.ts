@@ -8,6 +8,7 @@ import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import {
   ACCESS_KEY,
+  ACCESS_LEVEL,
   ADMIN_KEY,
   PUBLIC_KEY,
   ROLES,
@@ -42,7 +43,7 @@ export class AccessLevelGuard implements CanActivate {
       context.getHandler(),
     );
 
-    const accesLevel = this.reflector.get<number>(
+    const accessLevel = this.reflector.get<keyof typeof ACCESS_LEVEL>(
       ACCESS_KEY,
       context.getHandler(),
     );
@@ -56,7 +57,7 @@ export class AccessLevelGuard implements CanActivate {
     const { roleUser, idUser } = req;
 
     // en caso de no requerir un nivel de acceso
-    if (accesLevel === undefined) {
+    if (accessLevel === undefined) {
       // validamos si no enviamos rol, o si es BASIC
       if (roles === undefined) {
         // Si Admin no existe puede pasar, ya que no tiene el decorador admin, y no es necesario que lo sea
@@ -77,7 +78,7 @@ export class AccessLevelGuard implements CanActivate {
     }
 
     // Si es admin si o si pasa, sin importar si es basic o no
-    if (roleUser === ROLES.ADMIN) {
+    if (roleUser === ROLES.ADMIN || roleUser === ROLES.CREATOR) {
       return true;
     }
 
@@ -93,10 +94,8 @@ export class AccessLevelGuard implements CanActivate {
     }
 
     // si el usuario existe, validamos su nivel de acceso
-    if (accesLevel !== userExistInProject.accessLevel) {
-      throw new UnauthorizedException(
-        'El usuario no tiene el nivel de acceso necesario',
-      );
+    if (ACCESS_LEVEL[accessLevel] !== userExistInProject.accessLevel) {
+      throw new UnauthorizedException('No tienes el nivel de acceso necesario');
     }
 
     return true;
